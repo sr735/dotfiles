@@ -1,0 +1,17 @@
+"*":
+  "exception-reporting":
+    userId: "9b671e90-aca1-3b96-cdf2-ba608de89cf6"
+  welcome:
+    showOnStartup: false
+  core:
+    themes: [
+      "atom-material-ui"
+      "base16-tomorrow-dark-theme"
+    ]
+  editor:
+    invisibles: {}
+    tabLength: 4
+    fontSize: 12
+  "linter-flake8":
+    maxLineLength: 80
+  minimap: {}
