@@ -402,6 +402,7 @@ $ defaults write com.hegenberg.BetterSnapTool BSTMemorySaver -bool TRUE
 echo "Setting up symlinks and sourcing dotfiles..."
 cd ~ && git clone https://github.com/sirsoham/dotfiles/ && cd dotfiles
 
+rm ~/.atom
 ln -sfF ~/dotfiles/.atom ~
 ln -sfF ~/dotfiles/.bashrc ~
 source ~/.bashrc
