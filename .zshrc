@@ -44,10 +44,12 @@ alias tl="tail"
 alias zshconfig="vim ~/.zshrc"
 alias ohmyzsh="vim ~/.oh-my-zsh"
 alias bashconfig="vim ~/.bash_profile"
+alias sshconfig="vim ~/.ssh/config"
 alias subl='/Applications/Sublime\ Text.app/Contents/SharedSupport/bin/subl'
 alias fuck='eval $(thefuck $(fc -ln -1 | tail -n 1)); fc -R'
 alias FU='fuck'
 alias portal="python ~/inf_portal_api/portal/cli/portal.py"
+alias awsbastion="ssh -i '/Users/soham.roy/.ssh/id_rsa' centos@52.33.38.7"
 
 # Functions
 function hide(){
