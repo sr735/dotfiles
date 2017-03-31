@@ -24,6 +24,6 @@ Once you have customized `config.sh` to your liking, paste the following into yo
 
 If you didn't make any changes to the config script and thus *DID NOT* fork the repo, paste this into your Terminal application instead:
 
-`curl -L https://raw.githubusercontent.com/sirsoham/dotfiles/master/config.sh | sh`
+`curl -L https://raw.githubusercontent.com/sr735/dotfiles/master/config.sh | sh`
 
 **Note: You may be asked to enter your system password a few times as the script installs files, so don't go too far from your computer.**
