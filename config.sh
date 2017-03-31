@@ -39,7 +39,6 @@ curl https://install.meteor.com/ | sh
 echo "Installing applications/utilities/tools..."
 brew cask install java
 brew cask install iterm2
-brew cask install pandoc
 brew cask install google-chrome
 brew cask install caffeine
 brew cask install chromecast
@@ -51,13 +50,11 @@ brew cask install atom
 brew cask install vlc
 brew cask install virtualbox
 brew cask install vagrant
-brew cask install packer
 brew cask install qlcolorcode
 brew cask install qlstephen
 brew cask install qlmarkdown
 brew cask install quicklook-json
 brew cask install quicklook-csv
-brew cask install screenhero
 brew cask install intellij-idea-ce
 
 echo "Installing Fonts..."
