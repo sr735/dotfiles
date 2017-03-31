@@ -1,24 +1,29 @@
 "*":
+  "atom-beautify":
+    general:
+      _analyticsUserId: "43e38eee-2876-4d7a-a04e-8e55e61a9641"
   core:
+    telemetryConsent: "limited"
     themes: [
       "atom-material-ui"
       "base16-tomorrow-dark-theme"
     ]
   editor:
-    fontSize: 12
     invisibles: {}
-    tabLength: 4
+    showInvisibles: true
   "exception-reporting":
     userId: "9b671e90-aca1-3b96-cdf2-ba608de89cf6"
   "highlight-selected": {}
   linter: {}
   "linter-flake8":
-    maxLineLength: 80
+    maxLineLength: 100
+  "linter-rubocop": {}
+  "linter-ui-default":
+    showPanel: true
   minimap:
     plugins:
       "highlight-selected": true
       "highlight-selectedDecorationsZIndex": 0
-  "tree-view":
-    hideVcsIgnoredFiles: true
+  "tree-view": {}
   welcome:
     showOnStartup: false

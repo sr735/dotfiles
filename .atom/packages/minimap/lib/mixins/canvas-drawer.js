@@ -1,9 +1,9 @@
-'use babel'
+'use strict'
 
-import _ from 'underscore-plus'
-import Mixin from 'mixto'
-import Main from '../main'
-import CanvasLayer from '../canvas-layer'
+const _ = require('underscore-plus')
+const Mixin = require('mixto')
+const Main = require('../main')
+const CanvasLayer = require('../canvas-layer')
 
 /**
  * The `CanvasDrawer` mixin is responsible for the rendering of a `Minimap`
@@ -12,7 +12,7 @@ import CanvasLayer from '../canvas-layer'
  * This mixin is injected in the `MinimapElement` prototype, so all these
  * methods  are available on any `MinimapElement` instance.
  */
-export default class CanvasDrawer extends Mixin {
+module.exports = class CanvasDrawer extends Mixin {
   /**
    * Initializes the canvas elements needed to perform the `Minimap` rendering.
    */
@@ -102,8 +102,8 @@ export default class CanvasDrawer extends Mixin {
     const lastRow = this.minimap.getLastVisibleScreenRow()
 
     this.updateTokensLayer(firstRow, lastRow)
-    this.updateBackDecorationsLayers(firstRow, lastRow)
-    this.updateFrontDecorationsLayers(firstRow, lastRow)
+    this.updateBackDecorationsLayer(firstRow, lastRow)
+    this.updateFrontDecorationsLayer(firstRow, lastRow)
 
     this.pendingChanges = []
     this.pendingBackDecorationChanges = []
@@ -137,32 +137,118 @@ export default class CanvasDrawer extends Mixin {
   }
 
   /**
-   * Performs an update of the back decorations layer using the pending changes
-   * and the pending back decorations changes arrays.
+   * Performs an update of the back decorations layer using the pending back
+   * decorations changes arrays.
    *
    * @param  {number} firstRow firstRow the first row of the range to update
    * @param  {number} lastRow lastRow the last row of the range to update
    * @access private
    */
-  updateBackDecorationsLayers (firstRow, lastRow) {
-    const intactRanges = this.computeIntactRanges(firstRow, lastRow, this.pendingChanges.concat(this.pendingBackDecorationChanges))
+  updateBackDecorationsLayer (firstRow, lastRow) {
+    const intactRanges = this.computeIntactRanges(firstRow, lastRow, this.pendingBackDecorationChanges)
 
     this.redrawRangesOnLayer(this.backLayer, intactRanges, firstRow, lastRow, this.drawBackDecorationsForLines)
   }
 
   /**
-   * Performs an update of the front decorations layer using the pending changes
-   * and the pending front decorations changes arrays.
+   * Performs an update of the front decorations layer using the pending front
+   * decorations changes arrays.
    *
    * @param  {number} firstRow firstRow the first row of the range to update
    * @param  {number} lastRow lastRow the last row of the range to update
    * @access private
    */
-  updateFrontDecorationsLayers (firstRow, lastRow) {
-    const intactRanges = this.computeIntactRanges(firstRow, lastRow, this.pendingChanges.concat(this.pendingFrontDecorationChanges))
+  updateFrontDecorationsLayer (firstRow, lastRow) {
+    const intactRanges = this.computeIntactRanges(firstRow, lastRow, this.pendingFrontDecorationChanges)
 
     this.redrawRangesOnLayer(this.frontLayer, intactRanges, firstRow, lastRow, this.drawFrontDecorationsForLines)
   }
+
+  //     ######   #######  ##        #######  ########   ######
+  //    ##    ## ##     ## ##       ##     ## ##     ## ##    ##
+  //    ##       ##     ## ##       ##     ## ##     ## ##
+  //    ##       ##     ## ##       ##     ## ########   ######
+  //    ##       ##     ## ##       ##     ## ##   ##         ##
+  //    ##    ## ##     ## ##       ##     ## ##    ##  ##    ##
+  //     ######   #######  ########  #######  ##     ##  ######
+
+  /**
+   * Returns the opacity value to use when rendering the `Minimap` text.
+   *
+   * @return {Number} the text opacity value
+   */
+  getTextOpacity () { return this.textOpacity }
+
+  /**
+   * Returns the default text color for an editor content.
+   *
+   * The color value is directly read from the `TextEditorView` computed styles.
+   *
+   * @return {string} a CSS color
+   */
+  getDefaultColor () {
+    const color = this.retrieveStyleFromDom(['.editor'], 'color', true)
+    return this.transparentize(color, this.getTextOpacity())
+  }
+
+  /**
+   * Returns the text color for the passed-in `token` object.
+   *
+   * The color value is read from the DOM by creating a node structure that
+   * match the token `scope` property.
+   *
+   * @param  {Object} token a `TextEditor` token
+   * @return {string} the CSS color for the provided token
+   */
+  getTokenColor (token) {
+    const scopes = token.scopeDescriptor || token.scopes
+    const color = this.retrieveStyleFromDom(scopes, 'color')
+
+    return this.transparentize(color, this.getTextOpacity())
+  }
+
+  /**
+   * Returns the background color for the passed-in `decoration` object.
+   *
+   * The color value is read from the DOM by creating a node structure that
+   * match the decoration `scope` property unless the decoration provides
+   * its own `color` property.
+   *
+   * @param  {Decoration} decoration the decoration to get the color for
+   * @return {string} the CSS color for the provided decoration
+   */
+  getDecorationColor (decoration) {
+    const properties = decoration.getProperties()
+    if (properties.color) { return properties.color }
+
+    if (properties.scope) {
+      const scopeString = properties.scope.split(/\s+/)
+      return this.retrieveStyleFromDom(scopeString, 'background-color')
+    } else {
+      return this.getDefaultColor()
+    }
+  }
+
+  /**
+   * Converts a `rgb(...)` color into a `rgba(...)` color with the specified
+   * opacity.
+   *
+   * @param  {string} color the CSS RGB color to transparentize
+   * @param  {number} [opacity=1] the opacity amount
+   * @return {string} the transparentized CSS color
+   * @access private
+   */
+  transparentize (color, opacity = 1) {
+    return color.replace('rgb(', 'rgba(').replace(')', `, ${opacity})`)
+  }
+
+  //    ########  ########     ###    ##      ##
+  //    ##     ## ##     ##   ## ##   ##  ##  ##
+  //    ##     ## ##     ##  ##   ##  ##  ##  ##
+  //    ##     ## ########  ##     ## ##  ##  ##
+  //    ##     ## ##   ##   ######### ##  ##  ##
+  //    ##     ## ##    ##  ##     ## ##  ##  ##
+  //    ########  ##     ## ##     ##  ###  ###
 
   /**
    * Routine used to render changes in specific ranges for one layer.
@@ -214,7 +300,7 @@ export default class CanvasDrawer extends Mixin {
     for (let i = 0, len = ranges.length; i < len; i++) {
       const range = ranges[i]
 
-      method.call(this, currentRow, range.start - 1, currentRow - firstRow)
+      method.call(this, currentRow, range.start, currentRow - firstRow)
 
       currentRow = range.end
     }
@@ -222,88 +308,6 @@ export default class CanvasDrawer extends Mixin {
       method.call(this, currentRow, lastRow, currentRow - firstRow)
     }
   }
-
-  //     ######   #######  ##        #######  ########   ######
-  //    ##    ## ##     ## ##       ##     ## ##     ## ##    ##
-  //    ##       ##     ## ##       ##     ## ##     ## ##
-  //    ##       ##     ## ##       ##     ## ########   ######
-  //    ##       ##     ## ##       ##     ## ##   ##         ##
-  //    ##    ## ##     ## ##       ##     ## ##    ##  ##    ##
-  //     ######   #######  ########  #######  ##     ##  ######
-
-  /**
-   * Returns the opacity value to use when rendering the `Minimap` text.
-   *
-   * @return {Number} the text opacity value
-   */
-  getTextOpacity () { return this.textOpacity }
-
-  /**
-   * Returns the default text color for an editor content.
-   *
-   * The color value is directly read from the `TextEditorView` computed styles.
-   *
-   * @return {string} a CSS color
-   */
-  getDefaultColor () {
-    const color = this.retrieveStyleFromDom(['.editor'], 'color', false, true)
-    return this.transparentize(color, this.getTextOpacity())
-  }
-
-  /**
-   * Returns the text color for the passed-in `token` object.
-   *
-   * The color value is read from the DOM by creating a node structure that
-   * match the token `scope` property.
-   *
-   * @param  {Object} token a `TextEditor` token
-   * @return {string} the CSS color for the provided token
-   */
-  getTokenColor (token) {
-    const scopes = token.scopeDescriptor || token.scopes
-    const color = this.retrieveStyleFromDom(scopes, 'color')
-
-    return this.transparentize(color, this.getTextOpacity())
-  }
-
-  /**
-   * Returns the background color for the passed-in `decoration` object.
-   *
-   * The color value is read from the DOM by creating a node structure that
-   * match the decoration `scope` property unless the decoration provides
-   * its own `color` property.
-   *
-   * @param  {Decoration} decoration the decoration to get the color for
-   * @return {string} the CSS color for the provided decoration
-   */
-  getDecorationColor (decoration) {
-    const properties = decoration.getProperties()
-    if (properties.color) { return properties.color }
-
-    const scopeString = properties.scope.split(/\s+/)
-    return this.retrieveStyleFromDom(scopeString, 'background-color', false)
-  }
-
-  /**
-   * Converts a `rgb(...)` color into a `rgba(...)` color with the specified
-   * opacity.
-   *
-   * @param  {string} color the CSS RGB color to transparentize
-   * @param  {number} [opacity=1] the opacity amount
-   * @return {string} the transparentized CSS color
-   * @access private
-   */
-  transparentize (color, opacity = 1) {
-    return color.replace('rgb(', 'rgba(').replace(')', `, ${opacity})`)
-  }
-
-  //    ########  ########     ###    ##      ##
-  //    ##     ## ##     ##   ## ##   ##  ##  ##
-  //    ##     ## ##     ##  ##   ##  ##  ##  ##
-  //    ##     ## ########  ##     ## ##  ##  ##
-  //    ##     ## ##   ##   ######### ##  ##  ##
-  //    ##     ## ##    ##  ##     ## ##  ##  ##
-  //    ########  ##     ## ##     ##  ###  ###
 
   /**
    * Draws back decorations on the corresponding layer.
@@ -343,7 +347,8 @@ export default class CanvasDrawer extends Mixin {
 
       this.drawDecorations(screenRow, decorations, renderData, {
         'line': this.drawLineDecoration,
-        'highlight-under': this.drawHighlightDecoration
+        'highlight-under': this.drawHighlightDecoration,
+        'background-custom': this.drawCustomDecoration
       })
     }
 
@@ -387,13 +392,39 @@ export default class CanvasDrawer extends Mixin {
       renderData.screenRow = screenRow
 
       this.drawDecorations(screenRow, decorations, renderData, {
+        'gutter': this.drawGutterDecoration,
         'highlight-over': this.drawHighlightDecoration,
-        'highlight-outline': this.drawHighlightOutlineDecoration
+        'highlight-outline': this.drawHighlightOutlineDecoration,
+        'foreground-custom': this.drawCustomDecoration
       })
     }
 
     renderData.context.fill()
   }
+
+  /**
+   * Returns an array of tokens by line.
+   *
+   * @param  {number} startRow The start row
+   * @param  {number} endRow The end row
+   * @return {Array<Array>} An array of tokens by line
+   * @access private
+   */
+  eachTokenForScreenRows (startRow, endRow, callback) {
+    const editor = this.getTextEditor()
+    const invisibleRegExp = this.getInvisibleRegExp()
+    endRow = Math.min(endRow, editor.getScreenLineCount())
+
+    for (let row = startRow; row < endRow; row++) {
+      editor.tokensForScreenRow(row).forEach(token => {
+        callback(row, {
+          text: token.text.replace(invisibleRegExp, ' '),
+          scopes: token.scopes
+        })
+      })
+    }
+  }
+
   /**
    * Draws lines on the corresponding layer.
    *
@@ -410,7 +441,6 @@ export default class CanvasDrawer extends Mixin {
     if (firstRow > lastRow) { return }
 
     const devicePixelRatio = this.minimap.getDevicePixelRatio()
-    const lines = this.getTextEditor().tokenizedLinesForScreenRows(firstRow, lastRow)
     const lineHeight = this.minimap.getLineHeight() * devicePixelRatio
     const charHeight = this.minimap.getCharHeight() * devicePixelRatio
     const charWidth = this.minimap.getCharWidth() * devicePixelRatio
@@ -418,36 +448,29 @@ export default class CanvasDrawer extends Mixin {
     const context = this.tokensLayer.context
     const {width: canvasWidth} = this.tokensLayer.getSize()
 
-    let line = lines[0]
-    const invisibleRegExp = this.getInvisibleRegExp(line)
-
-    for (let i = 0, len = lines.length; i < len; i++) {
-      line = lines[i]
-      const yRow = (offsetRow + i) * lineHeight
-      let x = 0
-
-      if ((line != null ? line.tokens : void 0) != null) {
-        const tokens = line.tokens
-        for (let j = 0, tokensCount = tokens.length; j < tokensCount; j++) {
-          const token = tokens[j]
-          const w = token.screenDelta
-          if (!token.isOnlyWhitespace()) {
-            const color = displayCodeHighlights ? this.getTokenColor(token) : this.getDefaultColor()
-
-            let value = token.value
-            if (invisibleRegExp != null) {
-              value = value.replace(invisibleRegExp, ' ')
-            }
-            x = this.drawToken(context, value, color, x, yRow, charWidth, charHeight)
-          } else {
-            x += w * charWidth
-          }
-
-          if (x > canvasWidth) { break }
-        }
+    let lastLine, x
+    let y = (offsetRow * lineHeight) - lineHeight
+    this.eachTokenForScreenRows(firstRow, lastRow, (line, token) => {
+      if (lastLine !== line) {
+        x = 0
+        y += lineHeight
+        lastLine = line
+        context.clearRect(x, y, canvasWidth, lineHeight)
       }
-    }
+      if (x > canvasWidth) { return }
 
+      if (/^\s+$/.test(token.text)) {
+        x += token.text.length * charWidth
+      } else {
+        const color = displayCodeHighlights
+          ? this.getTokenColor(token)
+          : this.getDefaultColor()
+
+        x = this.drawToken(
+          context, token.text, color, x, y, charWidth, charHeight
+        )
+      }
+    })
     context.fill()
   }
 
@@ -455,23 +478,20 @@ export default class CanvasDrawer extends Mixin {
    * Returns the regexp to replace invisibles substitution characters
    * in editor lines.
    *
-   * @param  {TokenizedLine} line a tokenized lize to read the invisible
-   *                              characters
    * @return {RegExp} the regular expression to match invisible characters
    * @access private
    */
-  getInvisibleRegExp (line) {
-    if ((line != null) && (line.invisibles != null)) {
-      const invisibles = []
-      if (line.invisibles.cr != null) { invisibles.push(line.invisibles.cr) }
-      if (line.invisibles.eol != null) { invisibles.push(line.invisibles.eol) }
-      if (line.invisibles.space != null) { invisibles.push(line.invisibles.space) }
-      if (line.invisibles.tab != null) { invisibles.push(line.invisibles.tab) }
+  getInvisibleRegExp () {
+    let invisibles = this.getTextEditor().getInvisibles()
+    let regexp = []
+    if (invisibles.cr != null) { regexp.push(invisibles.cr) }
+    if (invisibles.eol != null) { regexp.push(invisibles.eol) }
+    if (invisibles.space != null) { regexp.push(invisibles.space) }
+    if (invisibles.tab != null) { regexp.push(invisibles.tab) }
 
-      return RegExp(invisibles.filter((s) => {
-        return typeof s === 'string'
-      }).map(_.escapeRegExp).join('|'), 'g')
-    }
+    return regexp.length === 0 ? null : RegExp(regexp.filter((s) => {
+      return typeof s === 'string'
+    }).map(_.escapeRegExp).join('|'), 'g')
   }
 
   /**
@@ -490,23 +510,30 @@ export default class CanvasDrawer extends Mixin {
   drawToken (context, text, color, x, y, charWidth, charHeight) {
     context.fillStyle = color
 
-    let chars = 0
-    for (let j = 0, len = text.length; j < len; j++) {
-      const char = text[j]
-      if (/\s/.test(char)) {
-        if (chars > 0) {
-          context.fillRect(x - (chars * charWidth), y, chars * charWidth, charHeight)
+    if (this.ignoreWhitespacesInTokens) {
+      const length = text.length * charWidth
+      context.fillRect(x, y, length, charHeight)
+
+      return x + length
+    } else {
+      let chars = 0
+      for (let j = 0, len = text.length; j < len; j++) {
+        const char = text[j]
+        if (/\s/.test(char)) {
+          if (chars > 0) {
+            context.fillRect(x - (chars * charWidth), y, chars * charWidth, charHeight)
+          }
+          chars = 0
+        } else {
+          chars++
         }
-        chars = 0
-      } else {
-        chars++
+        x += charWidth
       }
-      x += charWidth
+      if (chars > 0) {
+        context.fillRect(x - (chars * charWidth), y, chars * charWidth, charHeight)
+      }
+      return x
     }
-    if (chars > 0) {
-      context.fillRect(x - (chars * charWidth), y, chars * charWidth, charHeight)
-    }
-    return x
   }
 
   /**
@@ -525,6 +552,11 @@ export default class CanvasDrawer extends Mixin {
    */
   drawDecorations (screenRow, decorations, renderData, types) {
     let decorationsToRender = []
+
+    renderData.context.clearRect(
+      0, renderData.yRow,
+      renderData.canvasWidth, renderData.lineHeight
+    )
 
     for (let i in types) {
       decorationsToRender = decorationsToRender.concat(
@@ -553,6 +585,18 @@ export default class CanvasDrawer extends Mixin {
   drawLineDecoration (decoration, data) {
     data.context.fillStyle = this.getDecorationColor(decoration)
     data.context.fillRect(0, data.yRow, data.canvasWidth, data.lineHeight)
+  }
+
+  /**
+   * Draws a gutter decoration.
+   *
+   * @param  {Decoration} decoration the decoration to render
+   * @param  {Object} data the data need to perform the render
+   * @access private
+   */
+  drawGutterDecoration (decoration, data) {
+    data.context.fillStyle = this.getDecorationColor(decoration)
+    data.context.fillRect(0, data.yRow, 1, data.lineHeight)
   }
 
   /**
@@ -661,6 +705,25 @@ export default class CanvasDrawer extends Mixin {
           data.context.fillRect(xEnd, yEnd, canvasWidth - xEnd, 1)
         }
       }
+    }
+  }
+
+  /**
+   * Draws a custom decoration.
+   *
+   * It renders only the part of the highlight corresponding to the specified
+   * row.
+   *
+   * @param  {Decoration} decoration the decoration to render
+   * @param  {Object} data the data need to perform the render
+   * @access private
+   */
+  drawCustomDecoration (decoration, data) {
+    const renderRoutine = decoration.getProperties().render
+
+    if (renderRoutine) {
+      data.color = this.getDecorationColor(decoration)
+      renderRoutine(decoration, data)
     }
   }
 

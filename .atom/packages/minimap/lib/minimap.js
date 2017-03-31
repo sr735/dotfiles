@@ -1,11 +1,9 @@
-'use babel'
+'use strict'
 
-import {Emitter, CompositeDisposable} from 'atom'
-import include from './decorators/include'
-import DecorationManagement from './mixins/decoration-management'
-import LegacyAdater from './adapters/legacy-adapter'
-import StableAdapter from './adapters/stable-adapter'
+const include = require('./decorators/include')
+const DecorationManagement = require('./mixins/decoration-management')
 
+let Emitter, CompositeDisposable, LegacyAdapter, StableAdapter
 let nextModelId = 1
 
 /**
@@ -16,8 +14,11 @@ let nextModelId = 1
  * Their lifecycle follow the one of their target `TextEditor`, so they are
  * destroyed whenever their `TextEditor` is destroyed.
  */
-@include(DecorationManagement)
-export default class Minimap {
+class Minimap {
+  static initClass () {
+    include(this, DecorationManagement)
+    return this
+  }
   /**
    * Creates a new Minimap instance for the given `TextEditor`.
    *
@@ -33,6 +34,10 @@ export default class Minimap {
   constructor (options = {}) {
     if (!options.textEditor) {
       throw new Error('Cannot create a minimap without an editor')
+    }
+
+    if (!Emitter) {
+      ({Emitter, CompositeDisposable} = require('atom'))
     }
 
     /**
@@ -177,9 +182,15 @@ export default class Minimap {
     this.initializeDecorations()
 
     if (atom.views.getView(this.textEditor).getScrollTop != null) {
+      if (!StableAdapter) {
+        StableAdapter = require('./adapters/stable-adapter')
+      }
       this.adapter = new StableAdapter(this.textEditor)
     } else {
-      this.adapter = new LegacyAdater(this.textEditor)
+      if (!LegacyAdapter) {
+        LegacyAdapter = require('./adapters/legacy-adapter')
+      }
+      this.adapter = new LegacyAdapter(this.textEditor)
     }
 
     /**
@@ -205,9 +216,15 @@ export default class Minimap {
     }))
 
     subs.add(this.adapter.onDidChangeScrollTop(() => {
-      if (!this.standAlone) {
+      if (!this.standAlone && !this.ignoreTextEditorScroll && !this.inChangeScrollTop) {
+        this.inChangeScrollTop = true
         this.updateScrollTop()
         this.emitter.emit('did-change-scroll-top', this)
+        this.inChangeScrollTop = false
+      }
+
+      if (this.ignoreTextEditorScroll) {
+        this.ignoreTextEditorScroll = false
       }
     }))
     subs.add(this.adapter.onDidChangeScrollLeft(() => {
@@ -228,7 +245,11 @@ export default class Minimap {
     resulting in extra lines appearing at the end of the minimap.
     Forcing a whole repaint to fix that bug is suboptimal but works.
     */
-    subs.add(this.textEditor.displayBuffer.onDidTokenize(() => {
+    const tokenizedBuffer = this.textEditor.tokenizedBuffer
+      ? this.textEditor.tokenizedBuffer
+      : this.textEditor.displayBuffer.tokenizedBuffer
+
+    subs.add(tokenizedBuffer.onDidTokenize(() => {
       this.emitter.emit('did-change-config')
     }))
   }
@@ -478,7 +499,10 @@ export default class Minimap {
    *
    * @param {number} scrollTop the new scroll top value
    */
-  setTextEditorScrollTop (scrollTop) { this.adapter.setScrollTop(scrollTop) }
+  setTextEditorScrollTop (scrollTop, ignoreTextEditorScroll = false) {
+    this.ignoreTextEditorScroll = ignoreTextEditorScroll
+    this.adapter.setScrollTop(scrollTop)
+  }
 
   /**
    * Returns the `TextEditor` scroll left value.
@@ -605,9 +629,11 @@ export default class Minimap {
    * @param {number} width the new width of the Minimap
    */
   setScreenHeightAndWidth (height, width) {
-    this.height = height
-    this.width = width
-    this.updateScrollTop()
+    if (this.width !== width || this.height !== height) {
+      this.height = height
+      this.width = width
+      this.updateScrollTop()
+    }
   }
 
   /**
@@ -926,4 +952,8 @@ export default class Minimap {
    */
   clearCache () { this.adapter.clearCache() }
 
+  editorDestroyed () { this.adapter.editorDestroyed() }
+
 }
+
+module.exports = Minimap.initClass()

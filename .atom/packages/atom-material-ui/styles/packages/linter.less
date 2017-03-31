@@ -75,8 +75,11 @@ linter-message {
             color: @app-background-color;
         }
     }
+    a, a.eslint {
+        color: currentColor;
+    }
 }
-atom-text-editor, atom-text-editor::shadow {
+atom-text-editor, atom-text-editor.editor {
     .decoration.linter-row {
         .linter-gutter.linter-highlight {
             &.warning {

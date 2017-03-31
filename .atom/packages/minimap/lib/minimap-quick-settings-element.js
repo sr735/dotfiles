@@ -1,18 +1,20 @@
-'use babel'
+'use strict'
 
-import {CompositeDisposable, Emitter} from 'atom'
-import {EventsDelegation, SpacePenDSL} from 'atom-utils'
+const {CompositeDisposable, Emitter} = require('atom')
+const {EventsDelegation, SpacePenDSL} = require('atom-utils')
 
-import Main from './main'
-import element from './decorators/element'
-import include from './decorators/include'
+const Main = require('./main')
+const element = require('./decorators/element')
+const include = require('./decorators/include')
 
 /**
  * @access private
  */
-@element('minimap-quick-settings')
-@include(EventsDelegation, SpacePenDSL.Babel)
-export default class MinimapQuickSettingsElement {
+class MinimapQuickSettingsElement {
+  static initClass () {
+    include(this, EventsDelegation, SpacePenDSL.Babel)
+    return element(this, 'minimap-quick-settings')
+  }
 
   static content () {
     this.div({class: 'select-list popover-list minimap-quick-settings'}, () => {
@@ -21,6 +23,7 @@ export default class MinimapQuickSettingsElement {
         this.li({class: 'separator', outlet: 'separator'})
         this.li({class: 'code-highlights', outlet: 'codeHighlights'}, 'code-highlights')
         this.li({class: 'absolute-mode', outlet: 'absoluteMode'}, 'absolute-mode')
+        this.li({class: 'adjust-absolute-mode-height', outlet: 'adjustAbsoluteModeHeight'}, 'adjust-absolute-mode-height')
       })
       this.div({class: 'btn-group'}, () => {
         this.button({class: 'btn btn-default', outlet: 'onLeftButton'}, 'On Left')
@@ -101,6 +104,17 @@ export default class MinimapQuickSettingsElement {
       atom.config.set('minimap.absoluteMode', !atom.config.get('minimap.absoluteMode'))
     })
 
+    subs.add(this.subscribeTo(this.adjustAbsoluteModeHeight, {
+      'mousedown': (e) => {
+        e.preventDefault()
+        atom.config.set('minimap.adjustAbsoluteModeHeight', !atom.config.get('minimap.adjustAbsoluteModeHeight'))
+      }
+    }))
+
+    this.itemsActions.set(this.adjustAbsoluteModeHeight, () => {
+      atom.config.set('minimap.adjustAbsoluteModeHeight', !atom.config.get('minimap.adjustAbsoluteModeHeight'))
+    })
+
     subs.add(this.subscribeTo(this.hiddenInput, {
       'focusout': (e) => { this.destroy() }
     }))
@@ -125,6 +139,10 @@ export default class MinimapQuickSettingsElement {
 
     subs.add(atom.config.observe('minimap.absoluteMode', (bool) => {
       this.absoluteMode.classList.toggle('active', bool)
+    }))
+
+    subs.add(atom.config.observe('minimap.adjustAbsoluteModeHeight', (bool) => {
+      this.adjustAbsoluteModeHeight.classList.toggle('active', bool)
     }))
 
     subs.add(atom.config.observe('minimap.displayMinimapOnLeft', (bool) => {
@@ -228,3 +246,5 @@ export default class MinimapQuickSettingsElement {
     this.plugins[name].classList.remove('active')
   }
 }
+
+module.exports = MinimapQuickSettingsElement.initClass()

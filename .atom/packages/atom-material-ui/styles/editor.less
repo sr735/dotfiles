@@ -1,6 +1,6 @@
 @import "ui-variables";
 
-atom-text-editor[mini], atom-text-editor[mini]::shadow {
+atom-text-editor[mini], atom-text-editor[mini].editor {
     position: relative;
     color: @text-color;
     background-color: transparent;
@@ -13,6 +13,11 @@ atom-text-editor[mini], atom-text-editor[mini]::shadow {
     box-shadow: inset 0 -1px 0 0 fade(@text-color, 10%);
     transition: all 250ms ease;
 
+    .paint-cursor & {
+        .cursor {
+            border-color: @base-color;
+        }
+    }
     &::before {
         content: '';
         position: absolute;
@@ -22,16 +27,37 @@ atom-text-editor[mini], atom-text-editor[mini]::shadow {
         top: auto;
         left: 0;
         right: 0;
-        transition: all 300ms;
         transform: scaleX(0);
+    }
+    .use-animations &::before {
+        transition: transform 300ms;
     }
     .placeholder-text {
         color: fade(@text-color, 50%);
     }
+    .selection .region {
+        background: fade(@text-color, 10%);
+    }
+    .settings-view .section &, .settings-view .section & {
+        .selection .region {
+            background: fade(@text-color, 10%);
+        }
+    }
 }
-atom-text-editor, atom-text-editor::shadow {
+atom-text-editor, atom-text-editor.editor {
     text-rendering: optimizeLegibility;
 
+    .paint-cursor & {
+        .cursor {
+            border-color: @base-color;
+        }
+        .gutter .cursor-line {
+            color: @accent-color;
+        }
+        .gutter .cursor-line-no-selection {
+            color: @base-color;
+        }
+    }
     .find-result {
         .region {
             background: fade(@text-color, 15%);
@@ -41,10 +67,15 @@ atom-text-editor, atom-text-editor::shadow {
         }
     }
 }
-atom-text-editor[mini].is-focused, atom-text-editor[mini].is-focused::shadow {
+atom-text-editor[mini].is-focused, atom-text-editor[mini].is-focused.editor {
     background-color: transparent;
 
     &::before {
         transform: scaleX(1);
+    }
+    .settings-view .section &, .settings-view .section & {
+        .selection .region {
+            background: fade(@text-color, 20%);
+        }
     }
 }

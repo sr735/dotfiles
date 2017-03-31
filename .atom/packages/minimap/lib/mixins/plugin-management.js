@@ -1,7 +1,8 @@
-'use babel'
+'use strict'
 
-import Mixin from 'mixto'
-import { CompositeDisposable } from 'atom'
+const Mixin = require('mixto')
+
+let CompositeDisposable
 
 /**
  * Provides methods to manage minimap plugins.
@@ -18,7 +19,7 @@ import { CompositeDisposable } from 'atom'
  *
  * @access public
  */
-export default class PluginManagement extends Mixin {
+module.exports = class PluginManagement extends Mixin {
   /**
    * Returns the Minimap main module instance.
    *
@@ -68,6 +69,10 @@ export default class PluginManagement extends Mixin {
    *                              the registration.
    */
   registerPlugin (name, plugin) {
+    if (!CompositeDisposable) {
+      CompositeDisposable = require('atom').CompositeDisposable
+    }
+
     this.plugins[name] = plugin
     this.pluginsSubscriptions[name] = new CompositeDisposable()
 
@@ -160,15 +165,34 @@ export default class PluginManagement extends Mixin {
     const plugin = this.plugins[name]
     const pluginActive = plugin.isActive()
     const settingActive = atom.config.get(`minimap.plugins.${name}`)
+
+    if (atom.config.get('minimap.displayPluginsControls')) {
+      if (settingActive && !pluginActive) {
+        this.activatePlugin(name, plugin)
+      } else if (pluginActive && !settingActive) {
+        this.deactivatePlugin(name, plugin)
+      }
+    } else {
+      if (!pluginActive) {
+        this.activatePlugin(name, plugin)
+      } else if (pluginActive) {
+        this.deactivatePlugin(name, plugin)
+      }
+    }
+  }
+
+  activatePlugin (name, plugin) {
     const event = { name: name, plugin: plugin }
 
-    if (settingActive && !pluginActive) {
-      plugin.activatePlugin()
-      this.emitter.emit('did-activate-plugin', event)
-    } else if (pluginActive && !settingActive) {
-      plugin.deactivatePlugin()
-      this.emitter.emit('did-deactivate-plugin', event)
-    }
+    plugin.activatePlugin()
+    this.emitter.emit('did-activate-plugin', event)
+  }
+
+  deactivatePlugin (name, plugin) {
+    const event = { name: name, plugin: plugin }
+
+    plugin.deactivatePlugin()
+    this.emitter.emit('did-deactivate-plugin', event)
   }
 
   /**
@@ -189,14 +213,16 @@ export default class PluginManagement extends Mixin {
     const settingsKey = `minimap.plugins.${name}`
     const orderSettingsKey = `minimap.plugins.${name}DecorationsZIndex`
 
-    this.config.plugins.properties[name] = {
+    const config = this.getConfigSchema()
+
+    config.plugins.properties[name] = {
       type: 'boolean',
       title: name,
       description: `Whether the ${name} plugin is activated and displayed in the Minimap.`,
       default: true
     }
 
-    this.config.plugins.properties[`${name}DecorationsZIndex`] = {
+    config.plugins.properties[`${name}DecorationsZIndex`] = {
       type: 'integer',
       title: `${name} decorations order`,
       description: `The relative order of the ${name} plugin's decorations in the layer into which they are drawn. Note that this order only apply inside a layer, so highlight-over decorations will always be displayed above line decorations as they are rendered in different layers.`,
@@ -260,6 +286,6 @@ export default class PluginManagement extends Mixin {
   unregisterPluginControls (name) {
     this.pluginsSubscriptions[name].dispose()
     delete this.pluginsSubscriptions[name]
-    delete this.config.plugins.properties[name]
+    delete this.getConfigSchema().plugins.properties[name]
   }
 }

@@ -1,16 +1,26 @@
-'use babel'
+'use strict'
 
-import _ from 'underscore-plus'
-import fs from 'fs-plus'
-import path from 'path'
-import {BufferedProcess} from 'atom'
-import element from './decorators/element'
+const _ = require('underscore-plus')
+const fs = require('fs-plus')
+const path = require('path')
+const {BufferedProcess} = require('atom')
+const element = require('./decorators/element')
 
 /**
  * @access private
  */
-@element('minimap-plugin-generator')
-export default class MinimapPluginGeneratorElement {
+class MinimapPluginGeneratorElement {
+  static initClass () {
+    this.registerCommands()
+    return element(this, 'minimap-plugin-generator')
+  }
+
+  static registerCommands () {
+    atom.commands.add('minimap-plugin-generator', {
+      'core:confirm' () { this.confirm() },
+      'core:cancel' () { this.detach() }
+    })
+  }
 
   createdCallback () {
     this.previouslyFocusedElement = null
@@ -78,7 +88,7 @@ export default class MinimapPluginGeneratorElement {
 
   confirm () {
     if (this.validPackagePath()) {
-      this.removeChild(this.editorElement)
+      this.removeChild(this.modal)
       this.message.innerHTML = `
         <span class='loading loading-spinner-tiny inline-block'></span>
         Generate plugin at <span class="text-primary">${this.getPackagePath()}</span>
@@ -167,7 +177,4 @@ export default class MinimapPluginGeneratorElement {
   }
 }
 
-atom.commands.add('minimap-plugin-generator', {
-  'core:confirm' () { this.confirm() },
-  'core:cancel' () { this.detach() }
-})
+module.exports = MinimapPluginGeneratorElement.initClass()

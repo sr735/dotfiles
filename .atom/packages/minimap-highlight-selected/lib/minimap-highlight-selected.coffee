@@ -1,6 +1,5 @@
 {CompositeDisposable} = require 'event-kit'
 {requirePackages} = require 'atom-utils'
-MinimapHighlightSelectedView = null
 
 class MinimapHighlightSelected
   constructor: ->
@@ -9,10 +8,10 @@ class MinimapHighlightSelected
   activate: (state) ->
 
   consumeMinimapServiceV1: (@minimap) ->
-    requirePackages('highlight-selected').then ([@highlightSelected]) =>
-      MinimapHighlightSelectedView = require('./minimap-highlight-selected-view')()
+    @minimap.registerPlugin 'highlight-selected', this
 
-      @minimap.registerPlugin 'highlight-selected', this
+  consumeHighlightSelectedServiceV1: (@highlightSelected) ->
+    @init() if @minimap? and @active?
 
   deactivate: ->
     @deactivatePlugin()
@@ -26,31 +25,42 @@ class MinimapHighlightSelected
   activatePlugin: ->
     return if @active
 
+    @subscriptions.add @minimap.onDidActivate @init
+    @subscriptions.add @minimap.onDidDeactivate @dispose
+
     @active = true
 
-    @createViews()
+    @init() if @highlightSelected?
 
-    @subscriptions.add @minimap.onDidActivate @createViews
-    @subscriptions.add @minimap.onDidDeactivate @destroyViews
+  init: =>
+    @decorations = []
+    @highlightSelected.onDidAddMarker (marker) => @markerCreated(marker)
+    @highlightSelected.onDidAddSelectedMarker (marker) => @markerCreated(marker, true)
+    @highlightSelected.onDidRemoveAllMarkers => @markersDestroyed()
+
+  dispose: =>
+    @decorations?.forEach (decoration) -> decoration.destroy()
+    @decorations = null
+
+  markerCreated: (marker, selected = false) =>
+    activeMinimap = @minimap.getActiveMinimap()
+    return unless activeMinimap?
+    className  = 'highlight-selected'
+    className += ' selected' if selected
+
+    decoration = activeMinimap.decorateMarker(marker,
+      {type: 'highlight', class: className })
+    @decorations.push decoration
+
+  markersDestroyed: =>
+    @decorations.forEach (decoration) -> decoration.destroy()
+    @decorations = []
 
   deactivatePlugin: ->
     return unless @active
 
     @active = false
-    @destroyViews()
+    @dispose()
     @subscriptions.dispose()
-
-  createViews: =>
-    return if @viewsCreated
-
-    @viewsCreated = true
-    @view = new MinimapHighlightSelectedView(@minimap)
-    @view.handleSelection()
-
-  destroyViews: =>
-    return unless @viewsCreated
-    @viewsCreated = false
-    @view.removeMarkers()
-    @view.destroy()
 
 module.exports = new MinimapHighlightSelected

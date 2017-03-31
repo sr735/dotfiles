@@ -3,57 +3,15 @@
 
 import fs from 'fs';
 import config from './config-schema';
-import amuSettings from './amu-settings';
-import amuColorSettings from './amu-color-settings';
-import amuBindings from './amu-bindings';
+import settings from './settings';
+import colorSettings from './color-settings';
+import tabsSettings from './tabs-settings';
+import treeViewSettings from './tree-view-settings';
 import tinycolor from 'tinycolor2';
-import $ from 'atom-space-pen-views';
-
-var treeViews;
-
-var setTreeViews = function() {
-    setImmediate(() => {
-        treeViews = [
-            document.querySelector('.tree-view-resizer'),
-            document.querySelector('.remote-ftp-view'),
-            function () {
-                if (document.querySelector('.nuclide-file-tree')) {
-                    return document.querySelector('.nuclide-file-tree').parentElement.parentElement.parentElement;
-                }
-            }()
-        ];
-    });
-};
-
-var removeBlendingEl = function() {
-    setTreeViews();
-    treeViews.forEach((treeView) => {
-        if (treeView) {
-            var blendingEl = treeView.querySelector('.tabBlender');
-
-            if (blendingEl) {
-                treeView.removeChild(blendingEl);
-            }
-        }
-    });
-};
-
-atom.workspace.onDidAddPane(() => {
-    setImmediate(() => amuBindings.apply());
-});
+import { apply as updateSchema } from './update-config-schema';
 
 export default {
     config,
-
-    toggleClass(boolean, className) {
-        var root = document.querySelector('atom-workspace');
-
-        if (boolean) {
-            root.classList.add(className);
-        } else {
-            root.classList.remove(className);
-        }
-    },
 
     writeConfig(options) {
         var accentColor = atom.config.get('atom-material-ui.colors.accentColor').toRGBAString();
@@ -92,45 +50,15 @@ export default {
         });
     },
 
-    toggleBlendTreeView(bool) {
-        setTreeViews();
-        setImmediate(() => {
-            treeViews.forEach((treeView) => {
-                if (treeView) {
-                    var blendingEl = document.createElement('div');
-                    var title = document.createElement('span');
-
-                    blendingEl.classList.add('tabBlender');
-                    blendingEl.appendChild(title);
-
-                    if (treeView && bool) {
-                        if (treeView.querySelector('.tabBlender')) {
-                            removeBlendingEl();
-                        }
-                        treeView.insertBefore(blendingEl, treeView.firstChild);
-                    } else if (treeView && !bool) {
-                        removeBlendingEl();
-                    } else if (!treeView && bool) {
-                        if (atom.packages.getActivePackage('tree-view') || atom.packages.getActivePackage('Remote-FTP') || atom.packages.getActivePackage('nuclide')) {
-                            return setTimeout(() => {
-                                this.toggleBlendTreeView(bool);
-                                setImmediate(() => amuBindings.apply());
-                            }, 2000);
-                        }
-                    }
-                }
-            });
-        });
-    },
-
     activate() {
-        amuSettings.apply();
-        amuColorSettings.apply();
-        setImmediate(() => amuBindings.apply());
+        updateSchema();
+        settings.apply();
+        colorSettings.apply();
+        setImmediate(() => tabsSettings.apply());
         this.writeConfig({ noReload: true });
     },
 
     deactivate() {
-        this.toggleBlendTreeView(false);
+        treeViewSettings.toggleBlendTreeView(false);
     }
 };
