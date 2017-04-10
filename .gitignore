@@ -1,4 +1,6 @@
 # Atom files #
 .atom/packages/
 .atom/storage/
-
+.atom/recovery
+.atom/blob-store/
+.atom/compile-cache/
