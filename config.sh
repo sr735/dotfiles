@@ -6,7 +6,7 @@
 
 # Instructions:
 # To Run, execute:
-# curl -L https://raw.githubusercontent.com/sirsoham/dotfiles/master/config.sh | sh
+# curl -L https://raw.githubusercontent.com/sr735/dotfiles/master/config.sh | sh
 
 echo "Installing Homebrew..."
 ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
@@ -399,19 +399,19 @@ $ defaults write com.hegenberg.BetterSnapTool BSTMemorySaver -bool TRUE
 ###############################################################################
 
 echo "Setting up symlinks and sourcing dotfiles..."
-cd ~ && git clone https://github.com/sirsoham/dotfiles/ && cd dotfiles
+cd ~ && git clone https://github.com/sr735/dotfiles/ .dotfiles && cd .dotfiles
 
 rm ~/.atom
-ln -sfF ~/dotfiles/.atom ~
-ln -sfF ~/dotfiles/.bashrc ~
+ln -sfF ~/.dotfiles/.atom ~
+ln -sfF ~/.dotfiles/.bashrc ~
 source ~/.bashrc
-ln -sfF ~/dotfiles/.bash_profile ~
-ln -sfF ~/dotfiles/.inputrc ~
+ln -sfF ~/.dotfiles/.bash_profile ~
+ln -sfF ~/.dotfiles/.inputrc ~
 source ~/.inputrc
-ln -sfF ~/dotfiles/.vimrc ~
+ln -sfF ~/.dotfiles/.vimrc ~
 source ~/.vimrc
-ln -sfF ~/dotfiles/.zshrc ~
-cp ~/dotfiles/mysteeef.zsh-theme ~/.oh-my-zsh/themes/
+ln -sfF ~/.dotfiles/.zshrc ~
+cp ~/.dotfiles/mysteeef.zsh-theme ~/.oh-my-zsh/themes/
 source ~/.zshrc
 
 ###############################################################################
