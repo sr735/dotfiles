@@ -9,18 +9,22 @@
       "base16-tomorrow-dark-theme"
     ]
   editor:
+    fontSize: 16
     invisibles: {}
     showInvisibles: true
   "exception-reporting":
     userId: "9b671e90-aca1-3b96-cdf2-ba608de89cf6"
   "highlight-selected": {}
+  kite:
+    showKiteTourOnStatup: false
   linter: {}
   "linter-flake8":
     maxLineLength: 100
-  "linter-rubocop": {}
-  "linter-ui-default":
-    showPanel: true
+  "linter-rubocop":
+    executablePath: "/home/soham.roy/.rvm/gems/ruby-2.4.0@"
+  "linter-ui-default": {}
   minimap:
+    disablePythonDocLinks: true
     plugins:
       "find-and-replace": true
       "find-and-replaceDecorationsZIndex": 0
