@@ -2,6 +2,8 @@
   "atom-beautify":
     general:
       _analyticsUserId: "43e38eee-2876-4d7a-a04e-8e55e61a9641"
+  "atom-package-deps":
+    ignored: []
   core:
     telemetryConsent: "limited"
     themes: [
@@ -9,17 +11,19 @@
       "base16-tomorrow-dark-theme"
     ]
   editor:
-    fontSize: 16
     invisibles: {}
+    preferredLineLength: 120
     showInvisibles: true
   "exception-reporting":
     userId: "9b671e90-aca1-3b96-cdf2-ba608de89cf6"
   "highlight-selected": {}
   kite:
-    showKiteTourOnStatup: false
+    showKiteTourOnStartup: false
   linter: {}
   "linter-flake8":
     maxLineLength: 100
+  "linter-pycodestyle":
+    maxLineLength: 120
   "linter-rubocop":
     executablePath: "/home/soham.roy/.rvm/gems/ruby-2.4.0@"
   "linter-ui-default": {}
@@ -32,6 +36,7 @@
       "git-diffDecorationsZIndex": 0
       "highlight-selected": true
       "highlight-selectedDecorationsZIndex": 0
-  "tree-view": {}
+  "tree-view":
+    hideVcsIgnoredFiles: true
   welcome:
     showOnStartup: false
