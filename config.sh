@@ -14,9 +14,7 @@ ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/
 echo "Updating Homebrew..."
 brew doctor
 brew update
-
-echo "Installing terminal utilities..."
-brew install git
+echo "Installing terminal utilities..." brew install git
 brew install zsh
 brew install zsh-completions
 brew install zsh-history-substring-search
@@ -37,6 +35,7 @@ pip install pylama
 curl https://install.meteor.com/ | sh
 
 echo "Installing applications/utilities/tools..."
+brew cask install atom
 brew cask install java
 brew cask install iterm2
 brew cask install google-chrome
@@ -46,7 +45,7 @@ brew cask install cyberduck
 brew cask install dropbox
 brew cask install slack
 brew cask install spotify
-brew cask install atom
+brew cask install visual-studio-code
 brew cask install vlc
 brew cask install virtualbox
 brew cask install vagrant
@@ -401,8 +400,8 @@ $ defaults write com.hegenberg.BetterSnapTool BSTMemorySaver -bool TRUE
 echo "Setting up symlinks and sourcing dotfiles..."
 cd ~ && git clone https://github.com/sr735/dotfiles/ .dotfiles && cd .dotfiles
 
-rm ~/.atom
-ln -sfF ~/.dotfiles/.atom ~
+#ln -sfF ~/.dotfiles/.atom ~
+ln -sfF ~/.dotfiles/.vscode ~
 ln -sfF ~/.dotfiles/.bashrc ~
 source ~/.bashrc
 ln -sfF ~/.dotfiles/.bash_profile ~

@@ -1,6 +1,5 @@
 # Path to your oh-my-zsh installation.
 export ZSH=~/.oh-my-zsh
-export HOMEBREW_GITHUB_API_TOKEN="50447a7c52ce618d72a2534da2f13bab1e3c13b0"
 
 # Set name of the theme to load.
 # Look in ~/.oh-my-zsh/themes/
@@ -23,7 +22,7 @@ plugins=(git git-extras brew meteor osx pip pyenv python sudo zsh-syntax-highlig
 
 # User configuration
 
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/Library/Python/2.7/bin"
 # SSH-tools
 export PATH=$HOME/.local/bin:$HOME/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -59,20 +58,20 @@ alias splunk="/Applications/Splunk/bin/splunk"
 
 # Functions
 function hide(){
-    defaults write com.apple.finder AppleShowAllFiles -bool NO
+    defaults write com.apple.finder AppleShowAllFiles -bool false
     killall Finder
 }
 function show(){
-    defaults write com.apple.finder AppleShowAllFiles -bool YES
+    defaults write com.apple.finder AppleShowAllFiles -bool true
     killall Finder
 }
 
 # bind UP and DOWN arrow keys
-zmodload zsh/terminfo
+# zmodload zsh/terminfo
 # bind UP and DOWN arrow keys
-bindkey '^[[A' history-substring-search-up
-bindkey '^[[B' history-substring-search-down
-zmodload zsh/terminfo
+# bindkey '^[[A' history-substring-search-up
+# bindkey '^[[B' history-substring-search-down
+# zmodload zsh/terminfo
 
 # SSH wrappers
 function sshwrap(){
@@ -100,3 +99,4 @@ alias chefdk-2.5.3='sudo rm /opt/chefdk && sudo ln -s /opt/chefdk-2.5.3 /opt/che
 alias chefdk='unset gem && eval "$(/opt/chefdk/bin/chef shell-init ${SHELL##*/})"'
 alias wd-server='sudo rm /opt/chefdk && sudo ln -s /opt/chefdk-1.6.11 /opt/chefdk && rm ~/.berkshelf/config.json && ln -s ~/.berkshelf/config-opseng.json ~/.berkshelf/config.json && rm -rf ~/.berkshelf/cookbooks'
 alias wd-base='sudo rm /opt/chefdk && sudo ln -s /opt/chefdk-1.6.11 /opt/chefdk && rm ~/.berkshelf/config.json && ln -s ~/.berkshelf/config-chef-cookbooks-dev.json ~/.berkshelf/config.json && ~/.berkshelf/cookbooks'
+[ -f "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env" ] && source "${GHCUP_INSTALL_BASE_PREFIX:=$HOME}/.ghcup/env"
