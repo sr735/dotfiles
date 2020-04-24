@@ -90,9 +90,6 @@ export PATH="$PATH:$HOME/.rvm/bin"
 # Load RVM into a shell session *as a function*
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
-# Confluent
-export PATH="$PATH:$HOME/confluent-3.3.0/bin"
-
 # ChefDK
 alias chefdk-1.6.11='sudo rm /opt/chefdk && sudo ln -s /opt/chefdk-1.6.11 /opt/chefdk && rm ~/.berkshelf/config.json && ln -s ~/.berkshelf/config-opseng.json ~/.berkshelf/config.json'
 alias chefdk-2.5.3='sudo rm /opt/chefdk && sudo ln -s /opt/chefdk-2.5.3 /opt/chefdk && rm ~/.berkshelf/config.json && ln -s ~/.berkshelf/config-chef-cookbooks-dev.json ~/.berkshelf/config.json'
