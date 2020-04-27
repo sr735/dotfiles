@@ -9,9 +9,12 @@ brew install unrar
 brew install python
 brew install ruby
 brew install tree
-brew install caskroom/cask/brew-cask
-brew tap caskroom/versions
-brew tap caskroom/fonts
+brew install homebrew/homebrew-cask
+brew tap homebrew/cask-versions
+
+
+curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py
+python get-pip.py
 
 pip install flake8
 pip install pylama

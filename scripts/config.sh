@@ -49,7 +49,7 @@ git clone git://github.com/zsh-users/zsh-syntax-highlighting.git
 # Configure macOS
 ###############################################################################
 cecho "Configuring macOS..." $cyan
-zsh .scripts/osx.sh
+zsh ./scripts/osx.sh
 
 
 ###############################################################################

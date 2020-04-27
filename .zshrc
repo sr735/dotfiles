@@ -21,7 +21,6 @@ COMPLETION_WAITING_DOTS="false"
 plugins=(git git-extras brew meteor osx pip pyenv python sudo zsh-syntax-highlighting zsh-history-substring-search)
 
 # User configuration
-
 export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/Library/Python/2.7/bin"
 # SSH-tools
 export PATH=$HOME/.local/bin:$HOME/bin:$PATH
@@ -65,6 +64,9 @@ function show(){
     defaults write com.apple.finder AppleShowAllFiles -bool true
     killall Finder
 }
+
+#cecho
+source /usr/sbin/cecho.sh
 
 # bind UP and DOWN arrow keys
 # zmodload zsh/terminfo

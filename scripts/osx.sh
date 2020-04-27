@@ -1,4 +1,9 @@
+#!/bin/zsh
+
+# osx.sh
+# MacOS configurations largely made possible from Mathias Byens' work
 # [Thank you Mathias Byens!]
+
 cd ~
 
 # Set the colours you can use
@@ -329,6 +334,7 @@ ln -sfF ~/.dotfiles/.inputrc ~
 source ~/.inputrc
 ln -sfF ~/.dotfiles/.vimrc ~
 source ~/.vimrc
+ln -sfF ~/.dotfiles/tools/cecho.sh /usr/sbin/
 ln -sfF ~/.dotfiles/.zshrc ~
 cp ~/.dotfiles/mysteeef.zsh-theme ~/.oh-my-zsh/themes/
 source ~/.zshrc
