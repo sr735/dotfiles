@@ -32,6 +32,11 @@ source $ZSH/oh-my-zsh.sh
 # autoload -U colors && colors
 # PS1="%{$fg[yellow]%}%n%{$reset_color%}@%{$fg[cyan]%}%m %{$fg[yellow]%}%~ %{$reset_color%}%% "
 
+# Virtualenvwrapper
+export VIRTUALENVWRAPPER_PYTHON=/usr/local/bin/python3
+export VIRTUALENVWRAPPER_VIRTUALENV=/usr/local/bin/virtualenv
+source /usr/local/bin/virtualenvwrapper.sh
+
 # Aliases
 alias mkdir="mkdir -p"
 alias mv="mv -iv"
