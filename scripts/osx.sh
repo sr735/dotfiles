@@ -334,7 +334,7 @@ ln -sfF ~/.dotfiles/.inputrc ~
 source ~/.inputrc
 ln -sfF ~/.dotfiles/.vimrc ~
 source ~/.vimrc
-ln -sfF ~/.dotfiles/tools/cecho.sh /usr/sbin/
+ln -sfF ~/.dotfiles/tools/cecho.sh /usr/local/sbin/
 ln -sfF ~/.dotfiles/.zshrc ~
 cp ~/.dotfiles/mysteeef.zsh-theme ~/.oh-my-zsh/themes/
 source ~/.zshrc

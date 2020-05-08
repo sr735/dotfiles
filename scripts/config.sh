@@ -44,12 +44,16 @@ curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | 
 cd ~/.oh-my-zsh/custom/plugins
 git clone git://github.com/zsh-users/zsh-syntax-highlighting.git
 
+cd ~/.dotfiles
+echo "Loading cecho..."
+. tools/cecho.sh
+
 
 ###############################################################################
 # Configure macOS
 ###############################################################################
 cecho "Configuring macOS..." $cyan
-zsh ./scripts/osx.sh
+sh ./scripts/osx.sh
 
 
 ###############################################################################

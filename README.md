@@ -18,8 +18,9 @@ First, fork the repo, then edit the `config.sh` script to your liking. It is wel
 If this is your first time using Git and/or GitHub, check out [ProGit](https://progit.org), an open-source, easy-to-digest, and excellent resource on all things Git.
 
 ## Install from the configure script
-Once you have customized `config.sh` to your liking, clone the repo to `~/.dotfiles` folder in your system tree and run:
-`sh ~/.dotfiles/scripts/config.sh`
+Once you have customized `config.sh` to your liking, clone the repo to `~/.dotfiles` folder in your system tree, path into the directory and run:
+`./scripts/config.sh`
+*Note:* This script _will not_ work properly unless executed from the `~/.dotfiles` directory.
 
 Now sit back and watch the magic happen!
 

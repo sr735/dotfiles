@@ -11,6 +11,7 @@ brew install ruby
 brew install tree
 brew install homebrew/homebrew-cask
 brew tap homebrew/cask-versions
+brew tap homebrew/cask-fonts
 
 
 curl https://bootstrap.pypa.io/get-pip.py -o get-pip.py

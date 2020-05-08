@@ -1,8 +1,6 @@
 brew cask install java
 brew cask install iterm2
-brew cask install google-chrome
 brew cask install caffeine
-brew cask install chromecast
 brew cask install cyberduck
 brew cask install dropbox
 brew cask install slack
@@ -16,4 +14,3 @@ brew cask install qlstephen
 brew cask install qlmarkdown
 brew cask install quicklook-json
 brew cask install quicklook-csv
-brew cask install intellij-idea-ce

@@ -21,14 +21,14 @@ autoload -Uz vcs_info
 
 #use extended color pallete if available
 if [[ $TERM = *256color* || $TERM = *rxvt* ]]; then
-    blue="%F{69}"
+    skyblue="%F{69}"
     turquoise="%F{81}"
     orange="%F{166}"
     purple="%F{135}"
     hotpink="%F{161}"
     limegreen="%F{120}"
 else
-    blue="$fg[blue]"
+    skyblue="$fg[blue]"
     turquoise="$fg[cyan]"
     orange="$fg[yellow]"
     purple="$fg[magenta]"
@@ -98,5 +98,5 @@ function steeef_precmd {
 add-zsh-hook precmd steeef_precmd
 
 PROMPT=$'
-%{$blue%}%n%{$reset_color%} at %{$turquoise%}%m%{$reset_color%} in %{$limegreen%}%~%{$reset_color%} $vcs_info_msg_0_$(virtualenv_info)%{$reset_color%}
+%{$skyblue%}%n%{$reset_color%} at %{$turquoise%}%m%{$reset_color%} in %{$limegreen%}%~%{$reset_color%} $vcs_info_msg_0_$(virtualenv_info)%{$reset_color%}
 $ '

@@ -6,7 +6,7 @@ export ZSH=~/.oh-my-zsh
 ZSH_THEME="mysteeef"
 
 # Uncomment the following line to change how often to auto-update (in days).
-# export UPDATE_ZSH_DAYS=13
+ export UPDATE_ZSH_DAYS=13
 
 # Uncomment the following line to enable command auto-correction.
 # ENABLE_CORRECTION="true"
@@ -18,10 +18,10 @@ COMPLETION_WAITING_DOTS="false"
 # Custom plugins may be added to ~/.oh-my-zsh/custom/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(git git-extras brew meteor osx pip pyenv python sudo zsh-syntax-highlighting zsh-history-substring-search)
+plugins=(git git-extras brew meteor osx pip pyenv python sudo zsh-syntax-highlighting virtualenv virtualenvwrapper vscode)
 
 # User configuration
-export PATH="/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/Library/Python/2.7/bin"
+export PATH=/usr/local/bin:/usr/local/sbin:/usr/bin:/bin:/usr/sbin:/sbin:$HOME/Library/:$PATH
 # SSH-tools
 export PATH=$HOME/.local/bin:$HOME/bin:$PATH
 # export MANPATH="/usr/local/man:$MANPATH"
@@ -54,6 +54,8 @@ alias awsbastion="ssh -i '/Users/soham.roy/.ssh/id_rsa' centos@52.33.38.7"
 alias rdc="rsync -avz -f'- .??*/'"
 alias whoami="echo 'I AM GROOT'"
 alias splunk="/Applications/Splunk/bin/splunk"
+alias python="/usr/local/bin/python3"
+alias pip="/usr/local/bin/pip3"
 
 # Functions
 function hide(){
@@ -66,7 +68,7 @@ function show(){
 }
 
 #cecho
-source /usr/sbin/cecho.sh
+source /usr/local/sbin/cecho.sh
 
 # bind UP and DOWN arrow keys
 # zmodload zsh/terminfo
