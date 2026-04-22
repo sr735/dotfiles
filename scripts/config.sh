@@ -6,13 +6,13 @@
 
 # Instructions:
 # To Run, execute:
-# curl -L https://raw.githubusercontent.com/sr735/dotfiles/master/config.sh | sh
+# curl -L https://raw.githubusercontent.com/sr735/dotfiles/HEAD/config.sh | sh
 
 ###############################################################################
 # Homebrew
 ###############################################################################
 echo "Installing Homebrew..."
-ruby -e "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install)"
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 
 echo "Updating Homebrew..."
 brew doctor
@@ -39,10 +39,10 @@ brew cleanup
 # Oh-My-Zsh + Plugins
 ###############################################################################
 echo "Installing oh-my-zsh..."
-curl -L https://raw.github.com/robbyrussell/oh-my-zsh/master/tools/install.sh | sh
+curl -L https://raw.github.com/ohmyzsh/ohmyzsh/master/tools/install.sh | sh
 
 cd ~/.oh-my-zsh/custom/plugins
-git clone git://github.com/zsh-users/zsh-syntax-highlighting.git
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git
 
 cd ~/.dotfiles
 echo "Loading cecho..."

@@ -39,8 +39,6 @@ while true; do sudo -n true; sleep 60; kill -0 "$$" || exit; done 2>/dev/null &
 echo "Use dark mode display"
 sudo defaults write /Library/Preferences/.GlobalPreferences AppleInterfaceTheme Dark
 
-echo "Disable Spotlight indexing for any volume that gets mounted and has not yet been indexed before"
-sudo defaults write /.Spotlight-V100/VolumeConfiguration Exclusions -array "/Volumes"
 
 echo "Change indexing order and disable some search results in Spotlight"
   defaults write com.apple.spotlight orderedItems -array \
@@ -88,7 +86,9 @@ echo "Reveal IP address, hostname, OS version, etc. when clicking the clock in t
 sudo defaults write /Library/Preferences/com.apple.loginwindow AdminHostInfo HostName
 
 echo "Check for software updates daily, not just once per week"
-defaults write com.apple.SoftwareUpdate ScheduleFrequency -int 1
+defaults write com.apple.SoftwareUpdate AutomaticCheckEnabled -bool true
+defaults write com.apple.SoftwareUpdate AutomaticDownload -bool true
+defaults write com.apple.SoftwareUpdate CriticalUpdateInstall -bool true
 
 echo "Removing duplicates in the 'Open With' menu"
 /System/Library/Frameworks/CoreServices.framework/Frameworks/LaunchServices.framework/Support/lsregister -kill -r -domain local -domain system -domain user
@@ -97,9 +97,6 @@ echo "Removing duplicates in the 'Open With' menu"
 ###############################################################################
 # General Power and Performance modifications
 ###############################################################################
-# echo "Disable the menubar transparency"
-# defaults write com.apple.universalaccess reduceTransparency -bool true
-
 echo "Speeding up wake from sleep"
 # http://www.cultofmac.com/221392/quick-hack-speeds-up-retina-macbooks-wake-from-sleep-os-x-tips/
 sudo pmset -a standbydelay 86400
@@ -149,10 +146,6 @@ defaults write com.apple.screensaver askForPasswordDelay -int 0
 echo "Disabling subpixel font rendering on non-Apple LCDs"
 defaults write NSGlobalDomain AppleFontSmoothing -int 0
 
-echo "Enabling HiDPI display modes (requires restart)"
-sudo defaults write /Library/Preferences/com.apple.windowserver DisplayResolutionEnabled -bool true
-
-
 ###############################################################################
 # Finder
 ###############################################################################
@@ -191,9 +184,6 @@ defaults write com.apple.frameworks.diskimages skip-verify-remote -bool true
 echo "Allowing text selection in Quick Look/Preview in Finder by default"
 defaults write com.apple.finder QLEnableTextSelection -bool true
 
-echo "Remove Image Capture"
-sudo rm -rf /Applications/Image\ Capture.app
-
 echo "Set user folder as the default location for new Finder windows"
 defaults write com.apple.finder NewWindowTargetPath -string "file://${HOME}"
 
@@ -220,9 +210,6 @@ defaults write com.apple.dock autohide-time-modifier -float 0
 
 echo "Disable window animations"
 defaults write NSGlobalDomain NSAutomaticWindowAnimationsEnabled -bool false
-
-echo "Disable dashboard"
-defaults write com.apple.dashboard mcx-disabled -boolean YES
 
 echo "Minimize windows into their application’s icon"
 defaults write com.apple.dock minimize-to-application -bool true
@@ -260,14 +247,6 @@ defaults write com.apple.Safari "com.apple.Safari.ContentPageGroupIdentifier.Web
 
 echo "Adding a context menu item for showing the Web Inspector in web views"
 defaults write NSGlobalDomain WebKitDeveloperExtras -bool true
-
-# echo "Disabling the annoying backswipe in Chrome"
-# defaults write com.google.Chrome AppleEnableSwipeNavigateWithScrolls -bool false
-# defaults write com.google.Chrome.canary AppleEnableSwipeNavigateWithScrolls -bool false
-
-#echo "Using the system-native print preview dialog in Chrome"
-#defaults write com.google.Chrome DisablePrintPreview -bool true
-#defaults write com.google.Chrome.canary DisablePrintPreview -bool true
 
 
 ###############################################################################
@@ -316,7 +295,7 @@ defaults write com.hegenberg.BetterSnapTool previewAnimationDuration 0.05
 defaults write com.hegenberg.BetterSnapTool previewBorderWidth 2
 defaults write com.hegenberg.BetterSnapTool recognitionArea 100
 defaults write com.hegenberg.BetterSnapTool showMenubarIcon 0
-$ defaults write com.hegenberg.BetterSnapTool BSTMemorySaver -bool TRUE
+defaults write com.hegenberg.BetterSnapTool BSTMemorySaver -bool TRUE
 
 
 ###############################################################################
